@@ -15,8 +15,19 @@ class ByteTrackWrapper:
         self.tracker = BYTETracker(args, frame_rate=frame_rate)
 
     def update(self, detections, frame):
-        dets = np.array(detections)
-        online_targets = self.tracker.update(dets, (frame.shape[0], frame.shape[1]), (frame.shape[0], frame.shape[1]))
+        if len(detections) == 0:
+            dets = np.empty((0, 5), dtype=np.float32)  # o (0, 6) si incluyes score+class
+        else:
+            dets = np.array(detections, dtype=np.float32)
+            if dets.ndim == 1:  # detección única
+                dets = dets.reshape(1, -1)
+
+        online_targets = self.tracker.update(
+            dets,
+            (frame.shape[0], frame.shape[1]),
+            (frame.shape[0], frame.shape[1])
+        )
+
         tracks = []
         for t in online_targets:
             tlwh = t.tlwh

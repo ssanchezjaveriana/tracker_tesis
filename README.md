@@ -1,0 +1,22 @@
+# Crear entorno virtual nuevo
+```bash
+python3.10 -m venv .venv
+source .venv/bin/activate
+```
+
+# Instalar requirements:
+```bash
+pip install -r requirements.txt
+```
+
+# Instalar ByteTrack desde el repositorio oficial
+```bash
+git clone https://github.com/FoundationVision/ByteTrack.git byte_track_repo
+cd /(raíz proyecto)/byte_track_repo
+pip install -e .
+```
+
+## Verificar que se instaló correctamente
+```bash
+python -c "import yolox; print('YOLOX instalado correctamente.')"
+```
