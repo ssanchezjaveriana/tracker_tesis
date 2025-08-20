@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  person-tracking:
+    build: .
+    container_name: person_tracking
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: >
+      --video data/input_videos/test.mp4
+      --output data/output_videos/result.mp4

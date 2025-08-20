@@ -1,0 +1,6 @@
+ultralytics==8.0.196
+lapx==0.5.5
+cython_bbox
+numpy
+opencv-python
+scipy
