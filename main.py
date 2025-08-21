@@ -5,31 +5,48 @@ from trackers.bytetrack import ByteTrackWrapper
 from utils.visualize import draw_tracks
 
 def run(video_path, output_path):
-    detector = YOLOv8Detector("yolov8n.pt")
+    print(f"[INFO] Cargando modelo YOLOv8...")
+    detector = YOLOv8Detector("yolov8m.pt")
+
+    print(f"[INFO] Inicializando ByteTrack...")
     tracker = ByteTrackWrapper()
 
+    print(f"[INFO] Abriendo video: {video_path}")
     cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print("[ERROR] No se pudo abrir el video.")
+        return
+
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     out = cv2.VideoWriter(output_path, fourcc, 30.0,
                           (int(cap.get(3)), int(cap.get(4))))
 
+    frame_idx = 0
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
+            print("[INFO] Fin del video o error de lectura.")
             break
 
+        print(f"[INFO] Procesando frame {frame_idx}")
         detections = detector.detect(frame)
+        print(f"[DEBUG] Detecciones: {len(detections)}")
+
         tracks = tracker.update(detections, frame)
+        print(f"[DEBUG] Tracks activos: {len(tracks)}")
+
         frame = draw_tracks(frame, tracks)
         out.write(frame)
-        cv2.imshow("Tracking", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        if frame_idx % 10 == 0:
+            print(f"[INFO] Guardados {frame_idx} frames...")
+
+        frame_idx += 1
 
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+    print(f"[INFO] Video procesado guardado en: {output_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

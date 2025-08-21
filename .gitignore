@@ -5,6 +5,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Ignorar modelos YOLO
+*.pt
+
+# Ignorar videos
+*.mp4
+
 # C extensions
 *.so
 
