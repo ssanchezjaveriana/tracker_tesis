@@ -17,14 +17,28 @@ def run(video_path, output_path, config_path):
     )
 
     print(f"[INFO] Inicializando ByteTrack...")
+    
+    # Load trajectory storage configuration if available
+    trajectory_config = config.get("trajectory_storage", {})
+    
     tracker = ByteTrackWrapper(
         frame_rate=30,
         track_thresh=config["track_thresh"],
         match_thresh=config["match_thresh"],
         buffer=config["track_buffer"],
         aspect_ratio_thresh=config["aspect_ratio_thresh"],
-        min_box_area=config["min_box_area"]
+        min_box_area=config["min_box_area"],
+        # Trajectory storage parameters
+        enable_trajectory_storage=trajectory_config.get("enable", False),
+        trajectory_output_dir=trajectory_config.get("output_dir", "data/trajectories"),
+        trajectory_export_format=trajectory_config.get("export_format", "json"),
+        trajectory_export_frequency=trajectory_config.get("export_frequency", 100)
     )
+    
+    if trajectory_config.get("enable", False):
+        print(f"[INFO] Almacenamiento de trayectorias habilitado")
+        print(f"[INFO] Directorio de salida: {trajectory_config.get('output_dir', 'data/trajectories')}")
+        print(f"[INFO] Formato de exportación: {trajectory_config.get('export_format', 'json')}")
 
     print(f"[INFO] Abriendo video: {video_path}")
     cap = cv2.VideoCapture(video_path)
@@ -57,6 +71,20 @@ def run(video_path, output_path, config_path):
             print(f"[INFO] Guardados {frame_idx} frames...")
 
         frame_idx += 1
+
+    # Finalize trajectory storage if enabled
+    if trajectory_config.get("enable", False):
+        print(f"[INFO] Finalizando almacenamiento de trayectorias...")
+        tracker.finalize_trajectories()
+        
+        # Print trajectory summary
+        summary = tracker.get_trajectory_summary()
+        if summary:
+            print(f"[INFO] Resumen de trayectorias:")
+            print(f"  - Total de tracks: {summary['total_tracks']}")
+            print(f"  - Puntos de trayectoria: {summary['total_trajectory_points']}")
+            print(f"  - Frames procesados: {summary['current_frame']}")
+            print(f"  - Directorio de salida: {summary['output_directory']}")
 
     cap.release()
     out.release()

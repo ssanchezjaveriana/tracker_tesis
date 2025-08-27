@@ -5,3 +5,11 @@ match_thresh: 0.85
 track_buffer: 120
 aspect_ratio_thresh: 3.0
 min_box_area: 10
+
+# Trajectory storage configuration
+trajectory_storage:
+  enable: false  # Set to true to enable trajectory storage
+  output_dir: "data/trajectories"
+  export_format: "both"  # Options: "json", "csv", "both"
+  export_frequency: 100  # Export every N frames for memory management
+  max_memory_tracks: 1000  # Maximum tracks to keep in memory
