@@ -19,5 +19,5 @@ class YOLOv8Detector:
             if cls in self.target_classes:  # Detect selected big objects
                 x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                 conf = float(box.conf.cpu().numpy())
-                detections.append([x1, y1, x2, y2, conf])
+                detections.append([x1, y1, x2, y2, conf, cls])
         return detections

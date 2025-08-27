@@ -16,7 +16,7 @@ class ByteTrackWrapper:
 
     def update(self, detections, frame):
         if len(detections) == 0:
-            dets = np.empty((0, 5), dtype=np.float32)  # o (0, 6) si incluyes score+class
+            dets = np.empty((0, 6), dtype=np.float32)  # [x1, y1, x2, y2, conf, class]
         else:
             dets = np.array(detections, dtype=np.float32)
             if dets.ndim == 1:  # detección única
@@ -32,7 +32,8 @@ class ByteTrackWrapper:
         for t in online_targets:
             tlwh = t.tlwh
             track_id = t.track_id
+            class_id = getattr(t, 'class_id', None)
             x1, y1, w, h = tlwh
             x2, y2 = x1 + w, y1 + h
-            tracks.append((int(x1), int(y1), int(x2), int(y2), track_id))
+            tracks.append((int(x1), int(y1), int(x2), int(y2), track_id, class_id))
         return tracks
