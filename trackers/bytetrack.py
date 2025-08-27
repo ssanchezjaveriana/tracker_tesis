@@ -3,15 +3,15 @@ from yolox.tracker.byte_tracker import BYTETracker, STrack
 from yolox.tracker.byte_tracker import TrackState
 
 class ByteTrackWrapper:
-    def __init__(self, frame_rate=30, track_thresh=0.5, match_thresh=0.8, buffer=30):
+    def __init__(self, frame_rate=30, track_thresh=0.3, match_thresh=0.85, buffer=120):
         args = type('', (), {})()
-        args.track_thresh = track_thresh
-        args.track_buffer = buffer
-        args.match_thresh = match_thresh
-        args.aspect_ratio_thresh = 1.6
-        args.min_box_area = 10
+        args.track_thresh = track_thresh # Ajustar # baja para captar personas lejanas
+        args.track_buffer = buffer # Ajustar # más largo por posibles oclusiones
+        args.match_thresh = match_thresh # Ajustar # más estricto para mantener IDs
+        args.aspect_ratio_thresh = 3.0 # Ajustar # tolera personas acostadas o mal proyectadas
+        args.min_box_area = 10 # Ajustar # descarta cosas diminutas tipo pajaritos/sombras
         args.mot20 = False
-        args.frame_rate = frame_rate
+        args.frame_rate = frame_rate # Ajustar # 30 fps por los videos usados 
         self.tracker = BYTETracker(args, frame_rate=frame_rate)
 
     def update(self, detections, frame):
