@@ -20,3 +20,8 @@ pip install -e .
 ```bash
 python -c "import yolox; print('YOLOX instalado correctamente.')"
 ```
+
+# Comando para correr el programa
+```bash
+python main.py --video data/input_videos/{video_name}.mp4 --output data/output_videos/{video_name}.mp4 --config configs/{config_file}.yaml
+```
