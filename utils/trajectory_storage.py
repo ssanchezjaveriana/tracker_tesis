@@ -59,47 +59,23 @@ class TrajectoryStorage:
         print(f"Session ID: {self.session_id}")
     
     def extract_trajectory_from_track(self, track) -> Optional[Dict]:
-        """
-        Extract trajectory data from a STrack object.
-        
-        Args:
-            track: STrack object from ByteTracker
-            
-        Returns:
-            Dictionary containing trajectory point data, or None if no trajectory
-        """
         try:
-            # Access the trajectory data that's already stored in BaseTrack
-            if hasattr(track, 'history') and len(track.history) > 0:
-                # Get the most recent trajectory point
-                latest_frame = max(track.history.keys())
-                trajectory_point = track.history[latest_frame]
-                
-                # Add track metadata
-                trajectory_point.update({
-                    'track_id': track.track_id,
-                    'frame_id': self.current_frame,
-                    'timestamp': time.time()
-                })
-                
-                return trajectory_point
-            return None
-        except AttributeError:
-            # Fallback: create trajectory point from basic track data
-            center_x = track.tlwh[0] + track.tlwh[2] / 2
-            center_y = track.tlwh[1] + track.tlwh[3] / 2
-            
+            x1, y1, w, h = track.tlwh
+            center_x = x1 + w / 2
+            center_y = y1 + h / 2
+
             return {
                 'track_id': track.track_id,
                 'frame_id': self.current_frame,
                 'timestamp': time.time(),
                 'center': (center_x, center_y),
-                'bbox': (track.tlwh[0], track.tlwh[1], 
-                        track.tlwh[0] + track.tlwh[2], 
-                        track.tlwh[1] + track.tlwh[3]),
+                'bbox': (x1, y1, x1 + w, y1 + h),
                 'confidence': getattr(track, 'score', 0.0),
-                'state': str(getattr(track, 'state', 'unknown'))
+                'state': str(getattr(track, 'state', 'Tracked'))
             }
+        except Exception as e:
+            print(f"[ERROR] extracting trajectory: {e}")
+            return None
     
     def update_trajectories(self, online_tracks: List, class_mapping: Dict[int, int] = None):
         """
