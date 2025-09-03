@@ -5,3 +5,18 @@ match_thresh: 0.85
 track_buffer: 120
 aspect_ratio_thresh: 3.0
 min_box_area: 10
+
+# Trajectory storage configuration
+trajectory_storage:
+  enable: true  # Set to true to enable trajectory storage
+  output_dir: "data/trajectories"
+  export_format: "json"  # Options: "json", "csv", "both"
+  export_frequency: 100  # Export every N frames for memory management
+  max_memory_tracks: 1000  # Maximum tracks to keep in memory
+
+# Trajectory visualization configuration
+trajectory_visualization:
+  enable: true  # Enable trajectory drawing on video
+  tail_length: 30  # Number of historical points to display
+  thickness: 2  # Line thickness for trajectory paths
+  fade: true  # Apply fading effect to older points

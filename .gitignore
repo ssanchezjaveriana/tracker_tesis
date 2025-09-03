@@ -5,6 +5,11 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+#Ignorar trayectorias por ahora
+/data/trajectories
+/data/trajectories/*.json
+/data/trajectories/*.csv
+
 # Ignorar modelos YOLO
 *.pt
 
