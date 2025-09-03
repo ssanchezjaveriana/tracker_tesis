@@ -64,7 +64,19 @@ def run(video_path, output_path, config_path):
         tracks = tracker.update(detections, frame)
         print(f"[DEBUG] Tracks activos: {len(tracks)}")
 
-        frame = draw_tracks(frame, tracks)
+        # Get trajectory visualization configuration
+        trajectory_viz_config = config.get("trajectory_visualization", {})
+        
+        # Draw tracks with trajectories
+        frame = draw_tracks(
+            frame, 
+            tracks, 
+            tracker=tracker,
+            draw_trajectories=trajectory_viz_config.get("enable", True),
+            trajectory_tail_length=trajectory_viz_config.get("tail_length", 30),
+            trajectory_thickness=trajectory_viz_config.get("thickness", 2),
+            trajectory_fade=trajectory_viz_config.get("fade", True)
+        )
         out.write(frame)
 
         if frame_idx % 10 == 0:
