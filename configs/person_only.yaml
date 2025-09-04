@@ -17,6 +17,6 @@ trajectory_storage:
 # Trajectory visualization configuration
 trajectory_visualization:
   enable: true  # Enable trajectory drawing on video
-  tail_length: 30  # Number of historical points to display
+  tail_length: 200  # Number of historical points to display
   thickness: 2  # Line thickness for trajectory paths
   fade: true  # Apply fading effect to older points
