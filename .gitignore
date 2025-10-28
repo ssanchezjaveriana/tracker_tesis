@@ -13,6 +13,9 @@ __pycache__/
 # Ignorar modelos entrenados
 *.joblib
 
+# Ignorar csvs de resultados
+*.csv
+
 # Ignorar modelos YOLO
 *.pt
 
@@ -96,7 +99,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
 
 # IPython
 profile_default/
