@@ -58,7 +58,7 @@ def run(video_path, output_path, config_path):
     trajectory_config = config.get("trajectory_storage", {})
     
     tracker = ByteTrackWrapper(
-        frame_rate=30,
+        frame_rate=15,
         track_thresh=config["track_thresh"],
         match_thresh=config["match_thresh"],
         buffer=config["track_buffer"],
@@ -101,7 +101,7 @@ def run(video_path, output_path, config_path):
         return
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    out = cv2.VideoWriter(output_path, fourcc, 30.0,
+    out = cv2.VideoWriter(output_path, fourcc, 15.0,
                           (int(cap.get(3)), int(cap.get(4))))
 
     frame_idx = 0

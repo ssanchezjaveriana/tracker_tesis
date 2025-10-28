@@ -50,9 +50,9 @@ trajectory_visualization:
 # Co-movement detection configuration
 comovement_detection:
   enable: true  # Set to true to enable person-object association detection
-  proximity_threshold: 150  # Maximum distance (pixels) between centers for association
-  min_frames: 10  # Minimum consecutive frames to confirm association
-  max_gap_frames: 5  # Maximum frames allowed with broken proximity before clearing association
+  proximity_threshold: 100  # Maximum distance (pixels) between centers for association
+  min_frames: 5  # Minimum consecutive frames to confirm association
+  max_gap_frames: 10  # Maximum frames allowed with broken proximity before clearing association
   visualization:
     draw_connections: true  # Draw lines connecting associated objects
     connection_color: [0, 255, 0]  # Green color for connections (BGR format)
