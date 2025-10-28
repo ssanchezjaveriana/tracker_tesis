@@ -11,11 +11,38 @@ def run(video_path, output_path, config_path):
         config = yaml.safe_load(f)
 
     print(f"[INFO] Cargando modelo YOLOv8...")
+
+    # Parse class-specific parameters if available
+    class_conf_thresholds = {}
+    class_min_box_areas = {}
+    default_conf = config.get("conf", 0.25)  # Fallback for old config format
+
+    if "class_parameters" in config:
+        class_params = config["class_parameters"]
+        default_params = class_params.get("default", {})
+        default_conf = default_params.get("conf", 0.25)
+        default_min_box_area = default_params.get("min_box_area", 0)
+
+        # Build per-class parameter dictionaries
+        for cls in config["detect_classes"]:
+            if cls in class_params:
+                class_conf_thresholds[cls] = class_params[cls].get("conf", default_conf)
+                class_min_box_areas[cls] = class_params[cls].get("min_box_area", default_min_box_area)
+            else:
+                class_conf_thresholds[cls] = default_conf
+                class_min_box_areas[cls] = default_min_box_area
+
+        print(f"[INFO] Usando configuración por clase:")
+        print(f"  - Umbrales de confianza: {class_conf_thresholds}")
+        print(f"  - Áreas mínimas de caja: {class_min_box_areas}")
+
     detector = YOLOv8Detector(
         model_path=config["model_path"],
         detect_classes=config["detect_classes"],
-        conf=config["conf"],
-        iou=config["iou"]
+        conf=default_conf,
+        iou=config["iou"],
+        class_conf_thresholds=class_conf_thresholds if class_conf_thresholds else None,
+        class_min_box_areas=class_min_box_areas if class_min_box_areas else None
     )
 
     print(f"[INFO] Inicializando ByteTrack...")
