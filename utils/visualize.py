@@ -1,15 +1,30 @@
 import cv2
 import numpy as np
 
-# Colores RGB para cada clase
 CLASS_COLORS = {
-    0: (255, 0, 0),      # person - azul
-    2: (0, 255, 0),      # car - verde
-    24: (0, 0, 255),     # backpack - rojo
-    28: (255, 255, 0),   # suitcase - cyan
-    62: (255, 0, 255),   # tv - magenta
-    63: (0, 255, 255),   # laptop - amarillo
-    72: (100, 100, 100)  # refrigerator - gris
+    0:  (255, 0, 0),      # person - azul
+    1:  (0, 255, 255),    # bicycle - celeste
+    2:  (0, 255, 0),      # car - verde
+    3:  (255, 255, 0),    # motorcycle - amarillo
+    5:  (255, 0, 255),    # bus - magenta
+    7:  (0, 0, 128),      # truck - azul oscuro
+    13: (128, 128, 0),    # bench - oliva
+    24: (0, 0, 255),      # backpack - rojo
+    25: (255, 128, 0),    # umbrella - naranja
+    26: (128, 0, 255),    # handbag - morado
+    28: (255, 255, 0),    # suitcase - amarillo
+    39: (0, 128, 128),    # bottle - verde azulado
+    56: (128, 0, 0),      # chair - rojo oscuro
+    57: (0, 128, 0),      # couch - verde oscuro
+    58: (128, 128, 255),  # potted plant - lavanda
+    60: (0, 0, 128),      # dining table - azul marino
+    62: (255, 0, 255),    # tv - magenta
+    63: (0, 255, 128),    # laptop - verde claro
+    67: (255, 200, 0),    # cell phone - dorado
+    68: (150, 0, 255),    # microwave - violeta
+    69: (128, 128, 128),  # oven - gris medio
+    72: (100, 100, 100),  # refrigerator - gris oscuro
+    73: (200, 0, 0),      # book - rojo fuerte
 }
 
 # Para clases desconocidas (por si agregas más)
@@ -18,12 +33,28 @@ DEFAULT_COLOR = (255, 255, 255)
 # Para mapear los IDs de clase a nombres (opcional, para mostrar)
 CLASS_NAMES = {
     0: "person",
+    1: "bicycle",
     2: "car",
+    3: "motorcycle",
+    5: "bus",
+    7: "truck",
+    13: "bench",
     24: "backpack",
+    25: "umbrella",
+    26: "handbag",
     28: "suitcase",
+    39: "bottle",
+    56: "chair",
+    57: "couch",
+    58: "potted plant",
+    60: "dining table",
     62: "tv",
     63: "laptop",
-    72: "refrigerator"
+    67: "cell phone",
+    68: "microwave",
+    69: "oven",
+    72: "refrigerator",
+    73: "book"
 }
 
 def draw_trajectory(frame, trajectory_points, color, tail_length=30, thickness=2, fade=True):

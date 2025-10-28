@@ -13,7 +13,9 @@ def run(video_path, output_path, config_path):
     print(f"[INFO] Cargando modelo YOLOv8...")
     detector = YOLOv8Detector(
         model_path=config["model_path"],
-        detect_classes=config["detect_classes"]
+        detect_classes=config["detect_classes"],
+        conf=config["conf"],
+        iou=config["iou"]
     )
 
     print(f"[INFO] Inicializando ByteTrack...")
