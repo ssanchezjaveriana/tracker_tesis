@@ -3,7 +3,8 @@ import cv2
 import yaml
 from detectors.yolov8_detector import YOLOv8Detector
 from trackers.bytetrack import ByteTrackWrapper
-from utils.visualize import draw_tracks
+from utils.visualize import draw_tracks, draw_associations
+from utils.comovement_detector import CoMovementDetector
 
 def run(video_path, output_path, config_path):
     print(f"[INFO] Cargando configuración desde: {config_path}")
@@ -69,6 +70,24 @@ def run(video_path, output_path, config_path):
         print(f"[INFO] Directorio de salida: {trajectory_config.get('output_dir', 'data/trajectories')}")
         print(f"[INFO] Formato de exportación: {trajectory_config.get('export_format', 'json')}")
 
+    # Initialize co-movement detector if enabled
+    comovement_config = config.get("comovement_detection", {})
+    comovement_detector = None
+
+    if comovement_config.get("enable", False):
+        from utils.visualize import CLASS_NAMES
+
+        print(f"[INFO] Detección de co-movimiento habilitada")
+        print(f"[INFO] Umbral de proximidad: {comovement_config.get('proximity_threshold', 150)} pixels")
+        print(f"[INFO] Frames mínimos: {comovement_config.get('min_frames', 10)}")
+
+        comovement_detector = CoMovementDetector(
+            proximity_threshold=comovement_config.get('proximity_threshold', 150),
+            min_frames=comovement_config.get('min_frames', 10),
+            max_gap_frames=comovement_config.get('max_gap_frames', 5),
+            class_names=CLASS_NAMES
+        )
+
     print(f"[INFO] Abriendo video: {video_path}")
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -93,19 +112,38 @@ def run(video_path, output_path, config_path):
         tracks = tracker.update(detections, frame)
         print(f"[DEBUG] Tracks activos: {len(tracks)}")
 
+        # Update co-movement detector if enabled
+        associations = []
+        if comovement_detector is not None:
+            associations = comovement_detector.update(tracks, frame_idx)
+
         # Get trajectory visualization configuration
         trajectory_viz_config = config.get("trajectory_visualization", {})
-        
+
         # Draw tracks with trajectories
         frame = draw_tracks(
-            frame, 
-            tracks, 
+            frame,
+            tracks,
             tracker=tracker,
             draw_trajectories=trajectory_viz_config.get("enable", True),
             trajectory_tail_length=trajectory_viz_config.get("tail_length", 30),
             trajectory_thickness=trajectory_viz_config.get("thickness", 2),
             trajectory_fade=trajectory_viz_config.get("fade", True)
         )
+
+        # Draw associations if enabled
+        if associations and comovement_config.get("enable", False):
+            viz_config = comovement_config.get("visualization", {})
+            frame = draw_associations(
+                frame,
+                associations,
+                draw_connections=viz_config.get("draw_connections", True),
+                connection_color=tuple(viz_config.get("connection_color", [0, 255, 0])),
+                connection_thickness=viz_config.get("connection_thickness", 2),
+                highlight_boxes=viz_config.get("highlight_boxes", True),
+                show_labels=viz_config.get("show_labels", True)
+            )
+
         out.write(frame)
 
         if frame_idx % 10 == 0:

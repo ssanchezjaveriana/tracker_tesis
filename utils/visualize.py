@@ -150,5 +150,103 @@ def draw_tracks(frame, tracks, tracker=None, draw_trajectories=True,
         # Etiqueta
         cv2.putText(frame, label, (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-    
+
+    return frame
+
+
+def draw_associations(frame, associations, draw_connections=True,
+                     connection_color=(0, 255, 0), connection_thickness=2,
+                     highlight_boxes=True, show_labels=True):
+    """
+    Draw person-object associations on the frame.
+
+    Args:
+        frame: The video frame to draw on
+        associations: List of association dictionaries with visualization data
+        draw_connections: Whether to draw lines connecting associated objects
+        connection_color: Color for connection lines (BGR format)
+        connection_thickness: Thickness of connection lines
+        highlight_boxes: Whether to highlight associated boxes
+        show_labels: Whether to show association labels
+
+    Returns:
+        Modified frame with association visualizations
+    """
+    for assoc in associations:
+        person_bbox = assoc['person_bbox']
+        object_bbox = assoc['object_bbox']
+        person_id = assoc['person_id']
+        object_id = assoc['object_id']
+        object_class = assoc['object_class']
+
+        # Calculate center points
+        p_center = (
+            int((person_bbox[0] + person_bbox[2]) / 2),
+            int((person_bbox[1] + person_bbox[3]) / 2)
+        )
+        o_center = (
+            int((object_bbox[0] + object_bbox[2]) / 2),
+            int((object_bbox[1] + object_bbox[3]) / 2)
+        )
+
+        # Draw connection line between centers
+        if draw_connections:
+            cv2.line(frame, p_center, o_center, connection_color, connection_thickness)
+
+        # Highlight boxes with additional border
+        if highlight_boxes:
+            # Draw thicker outer border for person
+            cv2.rectangle(
+                frame,
+                (person_bbox[0] - 2, person_bbox[1] - 2),
+                (person_bbox[2] + 2, person_bbox[3] + 2),
+                connection_color,
+                3
+            )
+
+            # Draw thicker outer border for object
+            cv2.rectangle(
+                frame,
+                (object_bbox[0] - 2, object_bbox[1] - 2),
+                (object_bbox[2] + 2, object_bbox[3] + 2),
+                connection_color,
+                3
+            )
+
+        # Draw association label
+        if show_labels:
+            object_name = CLASS_NAMES.get(object_class, f"class_{object_class}")
+            label = f"Person {person_id} with {object_name} {object_id}"
+
+            # Calculate label position (above the person box)
+            label_x = person_bbox[0]
+            label_y = person_bbox[1] - 30
+
+            # Ensure label is within frame bounds
+            if label_y < 30:
+                label_y = person_bbox[3] + 30
+
+            # Draw label background for better visibility
+            (text_width, text_height), baseline = cv2.getTextSize(
+                label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+            )
+            cv2.rectangle(
+                frame,
+                (label_x, label_y - text_height - baseline),
+                (label_x + text_width, label_y + baseline),
+                (0, 0, 0),
+                -1
+            )
+
+            # Draw label text
+            cv2.putText(
+                frame,
+                label,
+                (label_x, label_y),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                connection_color,
+                2
+            )
+
     return frame

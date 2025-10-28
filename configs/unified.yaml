@@ -35,3 +35,20 @@ trajectory_visualization:
   tail_length: 200  # Number of historical points to display
   thickness: 2  # Line thickness for trajectory paths
   fade: true  # Apply fading effect to older points
+
+# Co-movement detection configuration
+comovement_detection:
+  enable: true  # Set to true to enable person-object association detection
+  proximity_threshold: 150  # Maximum distance (pixels) between centers for association
+  min_frames: 10  # Minimum consecutive frames to confirm association
+  max_gap_frames: 5  # Maximum frames allowed with broken proximity before clearing association
+  visualization:
+    draw_connections: true  # Draw lines connecting associated objects
+    connection_color: [0, 255, 0]  # Green color for connections (BGR format)
+    connection_thickness: 2  # Line thickness for connections
+    highlight_boxes: true  # Highlight associated boxes with additional border
+    show_labels: true  # Show association labels on video
+  logging:
+    print_events: true  # Print association events to console
+    log_to_file: false  # Save association events to file
+    log_file_path: "data/comovement_log.txt"  # Path for log file if enabled
