@@ -31,6 +31,10 @@ CLASS_COLORS = {
 DEFAULT_COLOR = (255, 255, 255)
 
 # Para mapear los IDs de clase a nombres (opcional, para mostrar)
+# Note: Similar classes are grouped during detection to improve tracking consistency:
+#   - Classes 24/26/28 (backpack/handbag/suitcase) -> "bag"
+#   - Classes 56/57 (chair/couch) -> "seat"
+#   - Classes 68/69 (microwave/oven) -> "appliance"
 CLASS_NAMES = {
     0: "person",
     1: "bicycle",
@@ -39,20 +43,20 @@ CLASS_NAMES = {
     5: "bus",
     7: "truck",
     13: "bench",
-    24: "backpack",
+    24: "bag",  # Unified label for backpack/handbag/suitcase group
     25: "umbrella",
-    26: "handbag",
-    28: "suitcase",
+    26: "bag",  # handbag (grouped with backpack)
+    28: "bag",  # suitcase (grouped with backpack)
     39: "bottle",
-    56: "chair",
-    57: "couch",
+    56: "seat",  # Unified label for chair/couch group
+    57: "seat",  # couch (grouped with chair)
     58: "potted plant",
     60: "dining table",
     62: "tv",
     63: "laptop",
     67: "cell phone",
-    68: "microwave",
-    69: "oven",
+    68: "appliance",  # Unified label for microwave/oven group
+    69: "appliance",  # oven (grouped with microwave)
     72: "refrigerator",
     73: "book"
 }

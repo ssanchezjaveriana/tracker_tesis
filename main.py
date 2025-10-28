@@ -13,6 +13,11 @@ def run(video_path, output_path, config_path):
 
     print(f"[INFO] Cargando modelo YOLOv8...")
 
+    # Parse class grouping configuration if available
+    class_grouping = config.get("class_grouping", {})
+    if class_grouping:
+        print(f"[INFO] Configuración de agrupamiento de clases cargada")
+
     # Parse class-specific parameters if available
     class_conf_thresholds = {}
     class_min_box_areas = {}
@@ -43,7 +48,8 @@ def run(video_path, output_path, config_path):
         conf=default_conf,
         iou=config["iou"],
         class_conf_thresholds=class_conf_thresholds if class_conf_thresholds else None,
-        class_min_box_areas=class_min_box_areas if class_min_box_areas else None
+        class_min_box_areas=class_min_box_areas if class_min_box_areas else None,
+        class_grouping=class_grouping if class_grouping else None
     )
 
     print(f"[INFO] Inicializando ByteTrack...")

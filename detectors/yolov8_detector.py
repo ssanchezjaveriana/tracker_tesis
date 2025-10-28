@@ -3,13 +3,21 @@ import torch
 
 class YOLOv8Detector:
     def __init__(self, model_path="yolov8n.pt", detect_classes={0}, conf=0.25, iou=0.45,
-                 class_conf_thresholds=None, class_min_box_areas=None):
+                 class_conf_thresholds=None, class_min_box_areas=None, class_grouping=None):
         print(f"[INFO] Cargando modelo en {'GPU' if torch.cuda.is_available() else 'CPU'}")
         self.model = YOLO(model_path)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
         self.detect_classes = set(detect_classes)
         self.iou = iou  # NMS IoU threshold
+
+        # Class grouping/remapping (e.g., merge backpack, handbag, suitcase into one class)
+        self.class_grouping = class_grouping if class_grouping else {}
+        if self.class_grouping:
+            print(f"[INFO] Agrupamiento de clases habilitado:")
+            for original, target in self.class_grouping.items():
+                if original != target:
+                    print(f"  - Clase {original} -> {target}")
 
         # Per-class confidence thresholds
         self.class_conf_thresholds = class_conf_thresholds if class_conf_thresholds else {}
@@ -39,14 +47,19 @@ class YOLOv8Detector:
                 x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                 conf = float(box.conf.cpu().numpy())
 
-                # Get class-specific confidence threshold
+                # Apply class grouping/remapping BEFORE other filtering
+                # This ensures handbag (26) and suitcase (28) are treated as backpack (24)
+                original_cls = cls
+                cls = self.class_grouping.get(cls, cls)
+
+                # Get class-specific confidence threshold (use remapped class)
                 class_conf_threshold = self.class_conf_thresholds.get(cls, self.default_conf)
 
                 # Apply per-class confidence filtering
                 if conf < class_conf_threshold:
                     continue
 
-                # Get class-specific minimum box area
+                # Get class-specific minimum box area (use remapped class)
                 class_min_box_area = self.class_min_box_areas.get(cls, self.default_min_box_area)
 
                 # Apply per-class box area filtering
@@ -54,5 +67,6 @@ class YOLOv8Detector:
                 if box_area < class_min_box_area:
                     continue
 
+                # Use remapped class in detection output
                 detections.append([x1, y1, x2, y2, conf, cls])
         return detections

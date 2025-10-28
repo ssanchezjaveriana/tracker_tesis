@@ -1,6 +1,17 @@
 model_path: "yolov8m.pt"
 detect_classes: [0, 1, 2, 3, 5, 7, 13, 24, 25, 26, 28, 56, 57, 58, 60, 62, 63, 68, 69, 72]  # person, bicycle, car, motorcycle, bus, truck, bench, backpack, umbrella, handbag, suitcase, chair, couch, potted plant, dining table, tv, laptop, microwave, oven, refrigerator
 
+# Class grouping configuration - merge similar classes to improve tracking consistency
+# Maps multiple COCO classes to a single unified class ID for detection and tracking
+class_grouping:
+  24: 24  # backpack (primary - all bag types will be mapped to this)
+  26: 24  # handbag -> backpack
+  28: 24  # suitcase -> backpack
+  56: 56  # chair (primary - all seating furniture will be mapped to this)
+  57: 56  # couch -> chair
+  68: 68  # microwave (primary - all cooking appliances will be mapped to this)
+  69: 68  # oven -> microwave
+
 # Per-class detection parameters
 # Class-specific parameters override the default values
 class_parameters:
