@@ -1,28 +1,28 @@
-# Sistema de Detección y Seguimiento de Objetos con Análisis de Trayectorias
+# Object Detection and Tracking System with Trajectory Analysis
 
-Este proyecto implementa un sistema completo de detección, seguimiento y análisis de trayectorias de objetos en video utilizando YOLOv8 y ByteTrack, con capacidades de clustering para identificar patrones de comportamiento anómalos.
+This project implements a complete system for object detection, tracking, and trajectory analysis in video using YOLOv8 and ByteTrack, with clustering capabilities to identify anomalous behavior patterns.
 
-## Tabla de Contenidos
-- [Instalación](#instalación)
-- [Uso del Sistema](#uso-del-sistema)
-- [Configuración](#configuración)
-- [Pipeline Completo](#pipeline-completo)
-- [Análisis de Trayectorias](#análisis-de-trayectorias)
+## Table of Contents
+- [Installation](#installation)
+- [System Usage](#system-usage)
+- [Configuration](#configuration)
+- [Complete Pipeline](#complete-pipeline)
+- [Trajectory Analysis](#trajectory-analysis)
 
-## Instalación
+## Installation
 
-### 1. Crear entorno virtual
+### 1. Create virtual environment
 ```bash
 python3.10 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2. Instalar dependencias
+### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Instalar ByteTrack
+### 3. Install ByteTrack
 ```bash
 git clone https://github.com/FoundationVision/ByteTrack.git byte_track_repo
 cd byte_track_repo
@@ -30,16 +30,16 @@ pip install -e .
 cd ..
 ```
 
-### 4. Verificar instalación
+### 4. Verify installation
 ```bash
-python -c "import yolox; print('YOLOX instalado correctamente.')"
+python -c "import yolox; print('YOLOX installed successfully.')"
 ```
 
-## Uso del Sistema
+## System Usage
 
-### Procesamiento de Video
+### Video Processing
 
-El script principal procesa videos aplicando detección y seguimiento de objetos:
+The main script processes videos applying object detection and tracking:
 
 ```bash
 python main.py --video data/input_videos/{video_name}.mp4 \
@@ -47,221 +47,221 @@ python main.py --video data/input_videos/{video_name}.mp4 \
                --config configs/{config_file}.yaml
 ```
 
-**Parámetros:**
-- `--video`: Ruta del video de entrada
-- `--output`: Ruta donde se guardará el video procesado
-- `--config`: Archivo de configuración YAML (ver sección [Configuración](#configuración))
+**Parameters:**
+- `--video`: Input video path
+- `--output`: Path where the processed video will be saved
+- `--config`: YAML configuration file (see [Configuration](#configuration) section)
 
-**Ejemplo:**
+**Example:**
 ```bash
 python main.py --video data/input_videos/street_view.mp4 \
                --output data/output_videos/street_view_tracked.mp4 \
                --config configs/unified.yaml
 ```
 
-## Configuración
+## Configuration
 
-El proyecto incluye tres archivos de configuración en [configs/](configs/):
+The project includes three configuration files in [configs/](configs/):
 
 ### [configs/unified.yaml](configs/unified.yaml)
-Configuración completa con múltiples clases, agrupamiento de clases similares, detección de co-movimiento y almacenamiento de trayectorias.
+Complete configuration with multiple classes, grouping of similar classes, co-movement detection, and trajectory storage.
 
-**Características principales:**
-- Detección de 20 clases de COCO (personas, vehículos, objetos)
-- Agrupamiento de clases similares (ej: todas las bolsas → backpack)
-- Parámetros específicos por clase (confianza y área mínima)
-- Almacenamiento de trayectorias en JSON
-- Visualización de trayectorias con efecto fade
-- Detección de co-movimiento persona-objeto
+**Main features:**
+- Detection of 20 COCO classes (people, vehicles, objects)
+- Grouping of similar classes (e.g., all bags → backpack)
+- Class-specific parameters (confidence and minimum area)
+- Trajectory storage in JSON
+- Trajectory visualization with fade effect
+- Person-object co-movement detection
 
 ### [configs/person_only.yaml](configs/person_only.yaml)
-Configuración simplificada para seguimiento únicamente de personas.
+Simplified configuration for tracking people only.
 
 ### [configs/multiclass.yaml](configs/multiclass.yaml)
-Configuración para detección de múltiples clases sin agrupamiento.
+Configuration for multi-class detection without grouping.
 
-### Parámetros Clave
+### Key Parameters
 
-**Detección (YOLOv8):**
-- `model_path`: Modelo de YOLOv8 (ej: "yolov8m.pt")
-- `detect_classes`: Lista de IDs de clases COCO a detectar
-- `conf`: Umbral de confianza (0.0-1.0)
-- `iou`: Umbral de IoU para NMS
+**Detection (YOLOv8):**
+- `model_path`: YOLOv8 model (e.g., "yolov8m.pt")
+- `detect_classes`: List of COCO class IDs to detect
+- `conf`: Confidence threshold (0.0-1.0)
+- `iou`: IoU threshold for NMS
 
-**Seguimiento (ByteTrack):**
-- `track_thresh`: Umbral de confianza para iniciar tracks
-- `match_thresh`: Umbral para asociación de detecciones
-- `track_buffer`: Frames que un track puede estar inactivo
-- `aspect_ratio_thresh`: Filtro de aspect ratio
-- `min_box_area`: Área mínima de bounding box
+**Tracking (ByteTrack):**
+- `track_thresh`: Confidence threshold to start tracks
+- `match_thresh`: Threshold for detection association
+- `track_buffer`: Frames a track can be inactive
+- `aspect_ratio_thresh`: Aspect ratio filter
+- `min_box_area`: Minimum bounding box area
 
-**Almacenamiento de Trayectorias:**
+**Trajectory Storage:**
 ```yaml
 trajectory_storage:
   enable: true
   output_dir: "data/trajectories"
-  export_format: "json"  # "json", "csv", o "both"
-  export_frequency: 100  # Exportar cada N frames
+  export_format: "json"  # "json", "csv", or "both"
+  export_frequency: 100  # Export every N frames
 ```
 
-**Visualización de Trayectorias:**
+**Trajectory Visualization:**
 ```yaml
 trajectory_visualization:
   enable: true
-  tail_length: 200  # Puntos históricos a mostrar
+  tail_length: 200  # Historical points to display
   thickness: 2
-  fade: true  # Efecto de desvanecimiento
+  fade: true  # Fade effect
 ```
 
-**Detección de Co-Movimiento:**
+**Co-Movement Detection:**
 ```yaml
 comovement_detection:
   enable: true
-  proximity_threshold: 100  # Distancia máxima en píxeles
-  min_frames: 5  # Frames mínimos para confirmar asociación
-  max_gap_frames: 15  # Frames permitidos sin proximidad
+  proximity_threshold: 100  # Maximum distance in pixels
+  min_frames: 5  # Minimum frames to confirm association
+  max_gap_frames: 15  # Allowed frames without proximity
 ```
 
-## Pipeline Completo
+## Complete Pipeline
 
-### 1. Procesamiento de Video y Extracción de Trayectorias
+### 1. Video Processing and Trajectory Extraction
 
 ```bash
-# Procesar video con almacenamiento de trayectorias habilitado
+# Process video with trajectory storage enabled
 python main.py --video data/input_videos/video.mp4 \
                --output data/output_videos/video_tracked.mp4 \
                --config configs/unified.yaml
 ```
 
-**Salidas:**
-- Video procesado con visualizaciones: `data/output_videos/video_tracked.mp4`
-- Trayectorias en formato JSON: `data/trajectories/*.json`
+**Outputs:**
+- Processed video with visualizations: `data/output_videos/video_tracked.mp4`
+- Trajectories in JSON format: `data/trajectories/*.json`
 
-### 2. Exportar Trayectorias a CSV
+### 2. Export Trajectories to CSV
 
-Usar el notebook [export_trajectories.ipynb](export_trajectories.ipynb) para consolidar todos los archivos JSON en un único CSV:
+Use the notebook [export_trajectories.ipynb](export_trajectories.ipynb) to consolidate all JSON files into a single CSV:
 
 ```python
-# El notebook procesa por lotes para optimizar memoria
-# Genera: trayectorias_completas.csv
+# The notebook processes in batches to optimize memory
+# Generates: trayectorias_completas.csv
 ```
 
-**Formato del CSV:**
+**CSV Format:**
 ```
 track_id, frame_id, timestamp, cx, cy
 1, 523, 1761105123.45, 745.5, 213.2
 ```
 
-### 3. Análisis de Trayectorias con K-Means
+### 3. Trajectory Analysis with K-Means
 
-Usar el notebook [k_means.ipynb](k_means.ipynb) para análisis de clustering:
+Use the notebook [k_means.ipynb](k_means.ipynb) for clustering analysis:
 
-**Proceso:**
+**Process:**
 
-1. **Cálculo de Features:**
-   - Deltas de posición (x_delta, y_delta)
-   - Distancia euclidiana
-   - Velocidad y magnitud
-   - Suavizado con filtro Savitzky-Golay
-   - Histogramas de distribución (10 bins por métrica)
+1. **Feature Calculation:**
+   - Position deltas (x_delta, y_delta)
+   - Euclidean distance
+   - Velocity and magnitude
+   - Smoothing with Savitzky-Golay filter
+   - Distribution histograms (10 bins per metric)
 
 2. **Clustering:**
-   - Método del codo para determinar K óptimo
-   - K-Means con k=3
-   - Métricas de validación:
+   - Elbow method to determine optimal K
+   - K-Means with k=3
+   - Validation metrics:
      - Silhouette Score
      - Davies-Bouldin Index
      - Calinski-Harabasz Index
 
-3. **Visualización:**
-   - PCA para reducción dimensional
-   - Heatmaps de features por cluster
-   - Análisis de importancia de features
+3. **Visualization:**
+   - PCA for dimensionality reduction
+   - Feature heatmaps per cluster
+   - Feature importance analysis
 
-**Modelos Generados:**
-- `modelo_kmeans.joblib`: Modelo K-Means entrenado
-- `scaler_kmeans.joblib`: Escalador StandardScaler
-- `pca_modelo.joblib`: Modelo PCA
-- `features_combinados.csv`: Features extraídas
+**Generated Models:**
+- `modelo_kmeans.joblib`: Trained K-Means model
+- `scaler_kmeans.joblib`: StandardScaler scaler
+- `pca_modelo.joblib`: PCA model
+- `features_combinados.csv`: Extracted features
 
-### 4. Inferencia con Modelo Entrenado
+### 4. Inference with Trained Model
 
-Usar el notebook [inference.ipynb](inference.ipynb) para clasificar nuevas trayectorias:
+Use the notebook [inference.ipynb](inference.ipynb) to classify new trajectories:
 
 ```python
-# Cargar modelos
+# Load models
 kmeans = load('modelo_kmeans.joblib')
 scaler = load('scaler_kmeans.joblib')
 pca = load('pca_modelo.joblib')
 
-# Clasificar nuevas trayectorias
+# Classify new trajectories
 cluster_labels = kmeans.predict(scaler.transform(new_features))
 ```
 
-## Análisis de Trayectorias
+## Trajectory Analysis
 
-### Features Extraídas
+### Extracted Features
 
-**Estadísticas básicas (por track):**
-- `total_points`: Número de puntos en la trayectoria
-- `x_delta_min/max/avg`: Estadísticas de desplazamiento horizontal
-- `y_delta_min/max/avg`: Estadísticas de desplazamiento vertical
-- `distance_min/max/avg`: Estadísticas de distancia recorrida
-- `velocity_min/max/avg`: Estadísticas de velocidad
+**Basic statistics (per track):**
+- `total_points`: Number of points in the trajectory
+- `x_delta_min/max/avg`: Horizontal displacement statistics
+- `y_delta_min/max/avg`: Vertical displacement statistics
+- `distance_min/max/avg`: Distance traveled statistics
+- `velocity_min/max/avg`: Velocity statistics
 
-**Histogramas (40 features):**
-- `x_delta_bin_0` a `x_delta_bin_9`: Distribución de movimiento horizontal
-- `y_delta_bin_0` a `y_delta_bin_9`: Distribución de movimiento vertical
-- `distance_bin_0` a `distance_bin_9`: Distribución de distancias
-- `velocity_bin_0` a `velocity_bin_9`: Distribución de velocidades
+**Histograms (40 features):**
+- `x_delta_bin_0` to `x_delta_bin_9`: Horizontal movement distribution
+- `y_delta_bin_0` to `y_delta_bin_9`: Vertical movement distribution
+- `distance_bin_0` to `distance_bin_9`: Distance distribution
+- `velocity_bin_0` to `velocity_bin_9`: Velocity distribution
 
-### Interpretación de Clusters
+### Cluster Interpretation
 
-**Cluster 0**: Trayectorias normales
-- Movimiento regular y consistente
-- Velocidad y distancia dentro de rangos esperados
+**Cluster 0**: Normal trajectories
+- Regular and consistent movement
+- Velocity and distance within expected ranges
 
-**Cluster 1**: Trayectorias anómalas/sospechosas
-- Representa ~0.02% de todas las trayectorias
-- Características distintivas:
-  - Total de puntos muy alto (promedio ~2.4M puntos)
-  - Patrones de movimiento inusuales
-  - Alta separación en espacio PCA
+**Cluster 1**: Anomalous/suspicious trajectories
+- Represents ~0.02% of all trajectories
+- Distinctive characteristics:
+  - Very high total points (average ~2.4M points)
+  - Unusual movement patterns
+  - High separation in PCA space
 
-**Cluster 2**: Trayectorias de larga duración
-- Trayectorias extensas pero con movimiento normal
-- Promedio ~623K puntos
+**Cluster 2**: Long-duration trajectories
+- Extensive trajectories but with normal movement
+- Average ~623K points
 
-### Métricas de Calidad
+### Quality Metrics
 
-En el análisis con k=3 se obtuvieron:
-- **Silhouette Score**: 0.9389 (excelente separación)
-- **Davies-Bouldin Index**: 0.8978 (buena compacidad)
-- **Calinski-Harabasz Index**: 14901.70 (alta definición de clusters)
+In the analysis with k=3, the following were obtained:
+- **Silhouette Score**: 0.9389 (excellent separation)
+- **Davies-Bouldin Index**: 0.8978 (good compactness)
+- **Calinski-Harabasz Index**: 14901.70 (high cluster definition)
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 .
-├── configs/                 # Archivos de configuración YAML
+├── configs/                 # YAML configuration files
 ├── data/
-│   ├── input_videos/       # Videos de entrada
-│   ├── output_videos/      # Videos procesados
-│   └── trajectories/       # Trayectorias exportadas (JSON)
-├── detectors/              # Módulo de detección (YOLOv8)
-├── trackers/               # Módulo de seguimiento (ByteTrack)
-├── utils/                  # Utilidades (visualización, co-movimiento)
-├── main.py                 # Script principal
-├── export_trajectories.ipynb  # Exportar JSON → CSV
-├── k_means.ipynb          # Entrenamiento de clustering
-├── inference.ipynb        # Inferencia con modelo entrenado
-└── requirements.txt       # Dependencias Python
+│   ├── input_videos/       # Input videos
+│   ├── output_videos/      # Processed videos
+│   └── trajectories/       # Exported trajectories (JSON)
+├── detectors/              # Detection module (YOLOv8)
+├── trackers/               # Tracking module (ByteTrack)
+├── utils/                  # Utilities (visualization, co-movement)
+├── main.py                 # Main script
+├── export_trajectories.ipynb  # Export JSON → CSV
+├── k_means.ipynb          # Clustering training
+├── inference.ipynb        # Inference with trained model
+└── requirements.txt       # Python dependencies
 ```
 
-## Notas Adicionales
+## Additional Notes
 
-- El sistema soporta procesamiento de múltiples videos en paralelo
-- Las trayectorias se exportan incrementalmente cada N frames para optimizar memoria
-- El agrupamiento de clases mejora la consistencia del tracking
-- La detección de co-movimiento permite identificar asociaciones persona-objeto
-- Los modelos entrenados son reutilizables para nuevos videos
+- The system supports parallel processing of multiple videos
+- Trajectories are exported incrementally every N frames to optimize memory
+- Class grouping improves tracking consistency
+- Co-movement detection allows identification of person-object associations
+- Trained models are reusable for new videos
